@@ -1,0 +1,17 @@
+{
+  "name": "react-native-redux-auth-login-logout-example",
+  "displayName": "react-native-redux-auth-login-logout-example",
+  "expo": {
+    "name": "react-native-redux-auth-login-logout-example",
+    "slug": "expo-template-bare",
+    "version": "1.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
