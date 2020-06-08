@@ -1,36 +1,41 @@
 import * as React from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
-
-const instructions = Platform.select({
-  ios: `Press Cmd+R to reload,\nCmd+D or shake for dev menu`,
-  android: `Double tap R on your keyboard to reload,\nShake or press menu button for dev menu`,
-});
+import 'react-native-gesture-handler';
+import {NavigationContainer} from '@react-navigation/native';
+import {Provider} from 'react-redux';
+import { navigationRef } from './src/services/navRef'
+import store from './src/reducers';
+import Navigation from "./src/navigation/Navigation";
+import {useEffect, useState} from "react";
+import {loggedIn} from "./src/actions/auth";
+import {getAuthAsyncStorage} from "./src/services/getAuthAsyncStorage";
 
 export default function App() {
+  const [isLoading, setIsLoadingFromAsyncStorage] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      await setIsLoadingFromAsyncStorage(true);
+      const userStorage = await getAuthAsyncStorage();
+      if (userStorage.user && userStorage.token) {
+        await store.dispatch(loggedIn({
+          user: userStorage.user,
+          token: userStorage.token,
+        }));
+      }
+      await setIsLoadingFromAsyncStorage(false);
+    }
+    load();
+  }, []);
+
+  if (isLoading) {
+    return null;
+  }
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.welcome}>Welcome to React Native!</Text>
-      <Text style={styles.instructions}>To get started, edit App.js</Text>
-      <Text style={styles.instructions}>{instructions}</Text>
-    </View>
+    <Provider store={store}>
+      <NavigationContainer ref={navigationRef}>
+        <Navigation />
+      </NavigationContainer>
+    </Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
-});
